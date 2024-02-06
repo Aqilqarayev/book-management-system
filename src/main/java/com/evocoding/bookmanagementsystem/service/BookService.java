@@ -1,5 +1,6 @@
 package com.evocoding.bookmanagementsystem.service;
 
+import com.evocoding.bookmanagementsystem.exception.BookNotFoundException;
 import com.evocoding.bookmanagementsystem.repository.BookRepository;
 import com.evocoding.bookmanagementsystem.repository.entity.BookEntity;
 import com.evocoding.bookmanagementsystem.service.dto.BookDTO;
@@ -25,6 +26,11 @@ public class BookService {
         return bookDTOs;
     }
 
+    public BookDTO findById(Long id) {
+        var book = bookRepository.findById(id);
+        return mapToBookDTO(book.orElseThrow(() -> new BookNotFoundException("Book not found with id:" + id)));
+    }
+
     private static BookDTO mapToBookDTO(BookEntity book) {
         var bookDTO = new BookDTO();
         bookDTO.setId(book.getId());
@@ -36,4 +42,6 @@ public class BookService {
 
         return bookDTO;
     }
+
+
 }
