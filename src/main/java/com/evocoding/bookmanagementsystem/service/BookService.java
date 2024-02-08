@@ -5,6 +5,7 @@ import com.evocoding.bookmanagementsystem.repository.BookRepository;
 import com.evocoding.bookmanagementsystem.repository.entity.BookEntity;
 import com.evocoding.bookmanagementsystem.service.dto.BookDTO;
 import com.evocoding.bookmanagementsystem.service.dto.CreateBookDTO;
+import com.evocoding.bookmanagementsystem.service.dto.UpdateBookDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BookService {
+
     private final BookRepository bookRepository;
 
     public List<BookDTO> findAll() {
-        var books = bookRepository.findAll();
+        var books = bookRepository.findAllByIsDeleted(false);
         var bookDTOs = new ArrayList<BookDTO>();
 
         for (BookEntity book : books) {
@@ -29,13 +31,36 @@ public class BookService {
     }
 
     public BookDTO findById(Long id) {
-        var book = bookRepository.findById(id);
+        var book = bookRepository.findByIdAndIsDeleted(id, false);
         return mapToBookDTO(book.orElseThrow(() -> new BookNotFoundException("Book not found with id:" + id)));
     }
 
-    public void create(CreateBookDTO createBookDTO){
-       var book = mapToBookEntity(createBookDTO);
-       bookRepository.save(book);
+    public void create(CreateBookDTO createBookDTO) {
+        var book = mapToBookEntity(createBookDTO);
+        bookRepository.save(book);
+    }
+
+    public void update(Long id, UpdateBookDTO updateBookDTO) {
+        BookEntity book = getBookEntity(id);
+        book.setAuthor(updateBookDTO.getAuthor());
+        book.setIsbn(updateBookDTO.getIsbn());
+        book.setTitle(updateBookDTO.getTitle());
+        book.setGenre(updateBookDTO.getGenre());
+        book.setPublisher(updateBookDTO.getPublisher());
+
+        bookRepository.save(book);
+    }
+
+    public void delete(Long id) {
+        BookEntity book = getBookEntity(id);
+        book.setDeleted(true);
+
+        bookRepository.save(book);
+    }
+
+    private BookEntity getBookEntity(Long id) {
+        return bookRepository.findByIdAndIsDeleted(id, false)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id:" + id));
     }
 
     private static BookEntity mapToBookEntity(CreateBookDTO createBookDTO) {
@@ -59,7 +84,5 @@ public class BookService {
 
         return bookDTO;
     }
-
-
 
 }

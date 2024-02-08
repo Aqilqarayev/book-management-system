@@ -3,6 +3,7 @@ package com.evocoding.bookmanagementsystem.controller;
 import com.evocoding.bookmanagementsystem.service.BookService;
 import com.evocoding.bookmanagementsystem.service.dto.BookDTO;
 import com.evocoding.bookmanagementsystem.service.dto.CreateBookDTO;
+import com.evocoding.bookmanagementsystem.service.dto.UpdateBookDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ public class BookController {
     public List<BookDTO> findAll() {
         return bookService.findAll();
     }
+
     @GetMapping("/{id}")
     public BookDTO findById(@PathVariable Long id){
         return bookService.findById(id);
@@ -26,6 +28,16 @@ public class BookController {
     @PostMapping
     public void create(@RequestBody CreateBookDTO createBookDTO){
         bookService.create(createBookDTO);
+    }
+
+    @PutMapping("/{id}")
+    public void update(@PathVariable Long id, @RequestBody UpdateBookDTO updateBookDTO){
+        bookService.update(id,updateBookDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        bookService.delete(id);
     }
 
 }
