@@ -14,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookController {
     private final BookService bookService;
-
     @GetMapping
     public List<BookDTO> findAll() {
         return bookService.findAll();
