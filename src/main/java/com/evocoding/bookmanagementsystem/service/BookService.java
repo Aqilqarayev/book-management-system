@@ -32,18 +32,13 @@ public class BookService {
     }
 
     public BookDTO create(CreateBookDTO createBookDTO) {
-        var book = mapToBookEntity(createBookDTO);
+        BookEntity book = bookMapper.toBookEntity(createBookDTO);
         return bookMapper.toBookDTO(bookRepository.save(book));
     }
 
     public void update(Long id, UpdateBookDTO updateBookDTO) {
         BookEntity book = getBookEntity(id);
-        book.setAuthor(updateBookDTO.getAuthor());
-        book.setIsbn(updateBookDTO.getIsbn());
-        book.setTitle(updateBookDTO.getTitle());
-        book.setGenre(updateBookDTO.getGenre());
-        book.setPublisher(updateBookDTO.getPublisher());
-
+        bookMapper.toBookEntity(updateBookDTO, book);
         bookRepository.save(book);
     }
 
