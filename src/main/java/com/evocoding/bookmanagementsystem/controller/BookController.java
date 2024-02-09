@@ -5,8 +5,11 @@ import com.evocoding.bookmanagementsystem.service.dto.BookDTO;
 import com.evocoding.bookmanagementsystem.service.dto.CreateBookDTO;
 import com.evocoding.bookmanagementsystem.service.dto.UpdateBookDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Book;
 import java.util.List;
 
 @RestController
@@ -16,28 +19,30 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public List<BookDTO> findAll() {
-        return bookService.findAll();
+    public ResponseEntity<List<BookDTO>> findAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(bookService.findAll());
     }
 
     @GetMapping("/{id}")
-    public BookDTO findById(@PathVariable Long id){
-        return bookService.findById(id);
+    public ResponseEntity<BookDTO> findById(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(bookService.findById(id));
     }
 
     @PostMapping
-    public void create(@RequestBody CreateBookDTO createBookDTO){
-        bookService.create(createBookDTO);
+    public ResponseEntity<BookDTO> create(@RequestBody CreateBookDTO createBookDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookService.create(createBookDTO));
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody UpdateBookDTO updateBookDTO){
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UpdateBookDTO updateBookDTO){
         bookService.update(id,updateBookDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         bookService.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }

@@ -1,6 +1,7 @@
 package com.evocoding.bookmanagementsystem.service;
 
 import com.evocoding.bookmanagementsystem.exception.BookNotFoundException;
+import com.evocoding.bookmanagementsystem.mapper.BookMapper;
 import com.evocoding.bookmanagementsystem.repository.BookRepository;
 import com.evocoding.bookmanagementsystem.repository.entity.BookEntity;
 import com.evocoding.bookmanagementsystem.service.dto.BookDTO;
@@ -9,7 +10,6 @@ import com.evocoding.bookmanagementsystem.service.dto.UpdateBookDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Book;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,26 +18,22 @@ import java.util.List;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
     public List<BookDTO> findAll() {
         var books = bookRepository.findAllByIsDeleted(false);
-        var bookDTOs = new ArrayList<BookDTO>();
-
-        for (BookEntity book : books) {
-            bookDTOs.add(mapToBookDTO(book));
-        }
-
-        return bookDTOs;
+        return bookMapper.toBookDTOList(books);
     }
 
     public BookDTO findById(Long id) {
-        var book = bookRepository.findByIdAndIsDeleted(id, false);
-        return mapToBookDTO(book.orElseThrow(() -> new BookNotFoundException("Book not found with id:" + id)));
+        var book = bookRepository.findByIdAndIsDeleted(id, false)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id:" + id));
+        return bookMapper.toBookDTO(book);
     }
 
-    public void create(CreateBookDTO createBookDTO) {
+    public BookDTO create(CreateBookDTO createBookDTO) {
         var book = mapToBookEntity(createBookDTO);
-        bookRepository.save(book);
+        return bookMapper.toBookDTO(bookRepository.save(book));
     }
 
     public void update(Long id, UpdateBookDTO updateBookDTO) {
@@ -71,18 +67,6 @@ public class BookService {
         book.setGenre(createBookDTO.getGenre());
         book.setPublisher(createBookDTO.getPublisher());
         return book;
-    }
-
-    private static BookDTO mapToBookDTO(BookEntity book) {
-        var bookDTO = new BookDTO();
-        bookDTO.setId(book.getId());
-        bookDTO.setTitle(book.getTitle());
-        bookDTO.setAuthor(book.getAuthor());
-        bookDTO.setIsbn(book.getIsbn());
-        bookDTO.setGenre(book.getGenre());
-        bookDTO.setPublisher(book.getPublisher());
-
-        return bookDTO;
     }
 
 }
