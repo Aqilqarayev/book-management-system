@@ -2,10 +2,10 @@ package com.evocoding.bookmanagementsystem.controller;
 
 import com.evocoding.bookmanagementsystem.service.BookService;
 import com.evocoding.bookmanagementsystem.service.dto.BookDTO;
+import com.evocoding.bookmanagementsystem.service.dto.CreateBookDTO;
+import com.evocoding.bookmanagementsystem.service.dto.UpdateBookDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,4 +18,25 @@ public class BookController {
     public List<BookDTO> findAll() {
         return bookService.findAll();
     }
+
+    @GetMapping("/{id}")
+    public BookDTO findById(@PathVariable Long id){
+        return bookService.findById(id);
+    }
+
+    @PostMapping
+    public void create(@RequestBody CreateBookDTO createBookDTO){
+        bookService.create(createBookDTO);
+    }
+
+    @PutMapping("/{id}")
+    public void update(@PathVariable Long id, @RequestBody UpdateBookDTO updateBookDTO){
+        bookService.update(id,updateBookDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        bookService.delete(id);
+    }
+
 }
